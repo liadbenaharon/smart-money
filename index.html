@@ -1,71 +1,19 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#111827">
-  <title>Smart Money</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <main class="app-shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">ניהול פיננסי אישי</p>
-        <h1>הכסף שלי</h1>
-      </div>
-      <button id="resetBtn" class="ghost-btn" type="button">איפוס</button>
-    </header>
-
-    <section class="cards" id="balanceCards">
-      <article class="card"><span>Debit</span><strong id="debitBalance">₪0</strong><small>להוצאות שוטפות</small></article>
-      <article class="card"><span>מוכן לאשראי</span><strong id="creditBalance">₪0</strong><small id="creditChargeText">חיוב צפוי: ₪0</small></article>
-      <article class="card"><span>חיסכון חודשי</span><strong id="monthlyBalance">₪0</strong><small id="monthlyTargetText">יעד: ₪0</small></article>
-      <article class="card"><span>חיסכון שנתי</span><strong id="annualBalance">₪0</strong><small id="annualDaysText">—</small></article>
-    </section>
-
-    <section class="panel">
-      <div class="section-head">
-        <div><p class="eyebrow">מחשבון חלוקה</p><h2>נכנס כסף?</h2></div>
-      </div>
-      <label for="incomeInput">סכום ההכנסה</label>
-      <div class="money-input"><span>₪</span><input id="incomeInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="1000"></div>
-      <button id="calculateBtn" class="primary-btn" type="button">חשב חלוקה מומלצת</button>
-      <div id="allocationResult" class="allocation-grid hidden"></div>
-      <button id="applyBtn" class="success-btn hidden" type="button">אשר חלוקה ועדכן יתרות</button>
-    </section>
-
-    <section class="panel">
-      <div class="section-head"><div><p class="eyebrow">מצב אשראי</p><h2>החיוב הקרוב</h2></div></div>
-      <div id="creditStatus"></div>
-    </section>
-
-    <section class="panel">
-      <div class="section-head"><div><p class="eyebrow">הגדרות</p><h2>יתרות וכללים</h2></div></div>
-      <form id="settingsForm" class="settings-grid">
-        <label>יתרת Debit<input id="setDebit" type="number" min="0" step="0.01"></label>
-        <label>כסף שמור לאשראי<input id="setCredit" type="number" min="0" step="0.01"></label>
-        <label>חיוב אשראי צפוי<input id="setExpectedCredit" type="number" min="0" step="0.01"></label>
-        <label>חיסכון חודשי<input id="setMonthly" type="number" min="0" step="0.01"></label>
-        <label>יעד חיסכון חודשי<input id="setMonthlyTarget" type="number" min="0" step="0.01"></label>
-        <label>חיסכון שנתי<input id="setAnnual" type="number" min="0" step="0.01"></label>
-        <label>תאריך פתיחת חיסכון שנתי<input id="setAnnualDate" type="date"></label>
-        <label>מינימום רצוי ב-Debit<input id="setMinimumDebit" type="number" min="0" step="0.01"></label>
-        <label>אחוז Debit<input id="pctDebit" type="number" min="0" max="100" step="1"></label>
-        <label>אחוז אשראי<input id="pctCredit" type="number" min="0" max="100" step="1"></label>
-        <label>אחוז חיסכון חודשי<input id="pctMonthly" type="number" min="0" max="100" step="1"></label>
-        <label>אחוז חיסכון שנתי<input id="pctAnnual" type="number" min="0" max="100" step="1"></label>
-        <button class="primary-btn full" type="submit">שמור הגדרות</button>
-      </form>
-    </section>
-
-    <section class="panel">
-      <div class="section-head"><div><p class="eyebrow">היסטוריה</p><h2>פעולות אחרונות</h2></div></div>
-      <div id="historyList" class="history-list"></div>
-    </section>
-  </main>
-
-  <script src="app.js"></script>
-</body>
-</html>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111827">
+<title>Smart Money</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="style.css">
+</head><body><main class="app-shell">
+<header class="topbar"><div><p class="eyebrow">SMART MONEY</p><h1>תכנון חודש הבא</h1><p class="sub">כמה אפשר לחסוך בלי להיתקע במהלך החודש?</p></div></header>
+<section class="hero panel"><span>מומלץ להעביר לחיסכון</span><strong id="savingResult">₪0</strong><small id="savingMessage">הזן את הנתונים שלך למטה</small></section>
+<section class="summary-grid">
+<article class="card"><span>זמין אחרי המשכורת</span><strong id="availableTotal">₪0</strong></article>
+<article class="card"><span>סה״כ הוצאות צפויות</span><strong id="expensesTotal">₪0</strong></article>
+<article class="card"><span>להשאיר בעו״ש</span><strong id="keepTotal">₪0</strong></article>
+<article class="card"><span>רזרבה</span><strong id="reserveTotal">₪0</strong></article>
+</section>
+<section class="panel"><div class="section-head"><div><p class="eyebrow">הכסף שיהיה זמין</p><h2>עו״ש ומשכורת</h2></div></div><div class="form-grid"><label>יתרה נוכחית בעו״ש<input id="currentBalance" type="number" min="0" step="0.01" inputmode="decimal"></label><label>משכורת צפויה<input id="salary" type="number" min="0" step="0.01" inputmode="decimal"></label><label>רזרבה שתמיד תישאר<input id="reserve" type="number" min="0" step="0.01" inputmode="decimal"></label></div></section>
+<section class="panel"><div class="section-head"><div><p class="eyebrow">חודש הבא</p><h2>הוצאות צפויות</h2></div><button id="addExpenseBtn" class="small-btn" type="button">+ הוצאה</button></div><div id="expenseList" class="expense-list"></div><div class="expense-form"><input id="expenseName" placeholder="למשל: דלק"><input id="expenseAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="סכום"><select id="expenseMethod"><option value="credit">אשראי</option><option value="debit">Debit</option><option value="bank">עו״ש / הוראת קבע</option></select><button id="saveExpenseBtn" class="primary-btn" type="button">הוסף הוצאה</button></div></section>
+<section class="panel"><div class="section-head"><div><p class="eyebrow">פירוט</p><h2>לפי אמצעי תשלום</h2></div></div><div class="breakdown"><div><span>אשראי</span><strong id="creditTotal">₪0</strong></div><div><span>Debit</span><strong id="debitTotal">₪0</strong></div><div><span>עו״ש</span><strong id="bankTotal">₪0</strong></div></div></section>
+<section class="panel"><button id="resetBtn" class="danger-btn" type="button">איפוס כל הנתונים</button><p class="privacy">הנתונים נשמרים רק במכשיר הזה באמצעות LocalStorage.</p></section>
+</main><script src="app.js"></script></body></html>

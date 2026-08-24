@@ -1,0 +1,11 @@
+{
+  "name": "Smart Money",
+  "short_name": "Smart Money",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#111827",
+  "description": "אפליקציה אישית לניהול והקצאת כספים חכמה"
+}

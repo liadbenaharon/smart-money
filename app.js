@@ -1,122 +1,19 @@
-const STORAGE_KEY='smartMoneyAppV1';
-const defaultState={version:1,accounts:{debit:{name:'Debit',balance:1500},credit:{name:'אשראי',balance:800,expectedCharge:1200,chargeDate:'2026-09-10'},monthlySavings:{name:'חיסכון חודשי',balance:3500,target:5000},annualSavings:{name:'חיסכון שנתי',balance:10000,unlockDate:'2027-08-01'}},allocation:{mode:'smart',percentages:{debit:40,credit:25,monthlySavings:20,annualSavings:15},rules:{creditFirst:true,minimumDebit:1000,monthlySavingsTarget:5000}},transactions:[],settings:{currency:'ILS',locale:'he-IL'}};
-
-function clone(obj){return JSON.parse(JSON.stringify(obj));}
-function loadState(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||clone(defaultState);}catch{return clone(defaultState)}}
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
-let state=loadState();
-let pendingAllocation=null;
-let pendingIncome=0;
-
+const STORAGE_KEY='smartMoneyMonthlyV2';
+const defaultState={currentBalance:0,salary:0,reserve:1000,expenses:[]};
+const clone=o=>JSON.parse(JSON.stringify(o));
 const $=id=>document.getElementById(id);
 const money=v=>new Intl.NumberFormat('he-IL',{style:'currency',currency:'ILS',maximumFractionDigits:2}).format(Number(v)||0);
 const round=v=>Math.round((Number(v)||0)*100)/100;
-
-function smartAllocate(amount){
-  let remaining=round(amount);
-  const result={debit:0,credit:0,monthlySavings:0,annualSavings:0};
-  const credit=state.accounts.credit;
-  if(state.allocation.rules.creditFirst){
-    const creditMissing=Math.max(0,round(credit.expectedCharge-credit.balance));
-    const toCredit=Math.min(remaining,creditMissing);
-    result.credit=round(toCredit); remaining=round(remaining-toCredit);
-  }
-  const debitMissing=Math.max(0,round((state.allocation.rules.minimumDebit||0)-state.accounts.debit.balance));
-  const toDebit=Math.min(remaining,debitMissing);
-  result.debit=round(result.debit+toDebit); remaining=round(remaining-toDebit);
-  if(remaining<=0) return result;
-
-  const monthlyReached=state.accounts.monthlySavings.balance>=state.accounts.monthlySavings.target;
-  const p=state.allocation.percentages;
-  const weights={debit:p.debit,credit:state.allocation.rules.creditFirst?0:p.credit,monthlySavings:monthlyReached?0:p.monthlySavings,annualSavings:p.annualSavings};
-  let weightTotal=Object.values(weights).reduce((a,b)=>a+b,0);
-  if(weightTotal<=0){result.debit=round(result.debit+remaining);return result;}
-  const keys=Object.keys(weights);
-  let distributed=0;
-  keys.forEach((key,index)=>{
-    if(index===keys.length-1){result[key]=round(result[key]+remaining-distributed);return;}
-    const part=round(remaining*(weights[key]/weightTotal));
-    result[key]=round(result[key]+part);distributed=round(distributed+part);
-  });
-  const total=Object.values(result).reduce((a,b)=>round(a+b),0);
-  result.debit=round(result.debit+(amount-total));
-  return result;
-}
-
-function daysUntil(dateStr){if(!dateStr)return null;const today=new Date();today.setHours(0,0,0,0);const target=new Date(dateStr+'T00:00:00');return Math.max(0,Math.ceil((target-today)/86400000));}
-
-function render(){
-  $('debitBalance').textContent=money(state.accounts.debit.balance);
-  $('creditBalance').textContent=money(state.accounts.credit.balance);
-  $('monthlyBalance').textContent=money(state.accounts.monthlySavings.balance);
-  $('annualBalance').textContent=money(state.accounts.annualSavings.balance);
-  $('creditChargeText').textContent=`חיוב צפוי: ${money(state.accounts.credit.expectedCharge)}`;
-  $('monthlyTargetText').textContent=`יעד: ${money(state.accounts.monthlySavings.target)}`;
-  const d=daysUntil(state.accounts.annualSavings.unlockDate);
-  $('annualDaysText').textContent=d===0?'החיסכון נזיל 🎉':d===null?'לא הוגדר תאריך':`עוד ${d} ימים`;
-
-  const missing=Math.max(0,round(state.accounts.credit.expectedCharge-state.accounts.credit.balance));
-  const debitGap=Math.max(0,round(state.accounts.credit.expectedCharge-state.accounts.debit.balance));
-  $('creditStatus').innerHTML=missing<=0
-    ? `<div class="status good">✓ החיוב הקרוב מכוסה במלואו.</div>`
-    : `<div class="status warn">⚠ חסרים <strong>${money(missing)}</strong> בכסף ששמור לאשראי.${debitGap>0?` בנוסף, יתרת ה-Debit נמוכה מהחיוב הצפוי ב-${money(debitGap)}.`:''}</div>`;
-
-  $('setDebit').value=state.accounts.debit.balance;
-  $('setCredit').value=state.accounts.credit.balance;
-  $('setExpectedCredit').value=state.accounts.credit.expectedCharge;
-  $('setMonthly').value=state.accounts.monthlySavings.balance;
-  $('setMonthlyTarget').value=state.accounts.monthlySavings.target;
-  $('setAnnual').value=state.accounts.annualSavings.balance;
-  $('setAnnualDate').value=state.accounts.annualSavings.unlockDate||'';
-  $('setMinimumDebit').value=state.allocation.rules.minimumDebit;
-  $('pctDebit').value=state.allocation.percentages.debit;
-  $('pctCredit').value=state.allocation.percentages.credit;
-  $('pctMonthly').value=state.allocation.percentages.monthlySavings;
-  $('pctAnnual').value=state.allocation.percentages.annualSavings;
-  renderHistory();
-}
-
-function renderHistory(){
-  if(!state.transactions.length){$('historyList').innerHTML='<small>עדיין אין פעולות.</small>';return;}
-  $('historyList').innerHTML=state.transactions.slice(0,8).map(t=>`<div class="history-item"><div><strong>הכנסה ${money(t.amount)}</strong><small>${new Date(t.date).toLocaleString('he-IL')}</small></div><small>Debit ${money(t.allocation.debit)} · אשראי ${money(t.allocation.credit)}<br>חודשי ${money(t.allocation.monthlySavings)} · שנתי ${money(t.allocation.annualSavings)}</small></div>`).join('');
-}
-
-$('calculateBtn').addEventListener('click',()=>{
-  const amount=Number($('incomeInput').value);
-  if(!Number.isFinite(amount)||amount<=0){alert('יש להזין סכום גדול מ-0');return;}
-  pendingIncome=round(amount); pendingAllocation=smartAllocate(pendingIncome);
-  $('allocationResult').innerHTML=[['debit','Debit'],['credit','אשראי'],['monthlySavings','חיסכון חודשי'],['annualSavings','חיסכון שנתי']].map(([k,n])=>`<div class="allocation-item"><span>${n}</span><strong>${money(pendingAllocation[k])}</strong></div>`).join('');
-  $('allocationResult').classList.remove('hidden');$('applyBtn').classList.remove('hidden');
-});
-
-$('applyBtn').addEventListener('click',()=>{
-  if(!pendingAllocation)return;
-  state.accounts.debit.balance=round(state.accounts.debit.balance+pendingAllocation.debit);
-  state.accounts.credit.balance=round(state.accounts.credit.balance+pendingAllocation.credit);
-  state.accounts.monthlySavings.balance=round(state.accounts.monthlySavings.balance+pendingAllocation.monthlySavings);
-  state.accounts.annualSavings.balance=round(state.accounts.annualSavings.balance+pendingAllocation.annualSavings);
-  state.transactions.unshift({id:'txn_'+Date.now(),type:'income',amount:pendingIncome,date:new Date().toISOString(),allocation:clone(pendingAllocation)});
-  saveState();pendingAllocation=null;$('incomeInput').value='';$('allocationResult').classList.add('hidden');$('applyBtn').classList.add('hidden');render();
-});
-
-$('settingsForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const percentages={debit:Number($('pctDebit').value)||0,credit:Number($('pctCredit').value)||0,monthlySavings:Number($('pctMonthly').value)||0,annualSavings:Number($('pctAnnual').value)||0};
-  const total=Object.values(percentages).reduce((a,b)=>a+b,0);
-  if(total!==100){alert('האחוזים חייבים להסתכם ל-100%');return;}
-  state.accounts.debit.balance=round($('setDebit').value);
-  state.accounts.credit.balance=round($('setCredit').value);
-  state.accounts.credit.expectedCharge=round($('setExpectedCredit').value);
-  state.accounts.monthlySavings.balance=round($('setMonthly').value);
-  state.accounts.monthlySavings.target=round($('setMonthlyTarget').value);
-  state.accounts.annualSavings.balance=round($('setAnnual').value);
-  state.accounts.annualSavings.unlockDate=$('setAnnualDate').value;
-  state.allocation.rules.minimumDebit=round($('setMinimumDebit').value);
-  state.allocation.percentages=percentages;
-  saveState();render();alert('ההגדרות נשמרו');
-});
-
-$('resetBtn').addEventListener('click',()=>{if(confirm('לאפס את כל הנתונים המקומיים?')){state=clone(defaultState);saveState();render();}});
-
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
-render();
+function load(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||clone(defaultState)}catch{return clone(defaultState)}}
+let state=load();
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function totals(){const by={credit:0,debit:0,bank:0};state.expenses.forEach(e=>by[e.method]=round(by[e.method]+e.amount));const expenses=round(by.credit+by.debit+by.bank);const available=round(state.currentBalance+state.salary);const keep=round(expenses+state.reserve);const saving=round(Math.max(0,available-keep));const shortage=round(Math.max(0,keep-available));return{by,expenses,available,keep,saving,shortage}}
+function syncInputs(){state.currentBalance=round($('currentBalance').value);state.salary=round($('salary').value);state.reserve=round($('reserve').value);save();renderSummary()}
+function renderSummary(){const t=totals();$('availableTotal').textContent=money(t.available);$('expensesTotal').textContent=money(t.expenses);$('keepTotal').textContent=money(Math.min(t.available,t.keep));$('reserveTotal').textContent=money(state.reserve);$('savingResult').textContent=money(t.saving);if(t.shortage>0){$('savingMessage').textContent=`כרגע חסרים ${money(t.shortage)} כדי לכסות את ההוצאות ולשמור על הרזרבה.`;$('savingResult').classList.add('negative')}else{$('savingMessage').textContent=t.saving>0?`אפשר להעביר לחיסכון ולהשאיר ${money(t.keep)} בעו״ש.`:'אין כרגע עודף מומלץ להעברה לחיסכון.';$('savingResult').classList.remove('negative')}$('creditTotal').textContent=money(t.by.credit);$('debitTotal').textContent=money(t.by.debit);$('bankTotal').textContent=money(t.by.bank)}
+function methodName(m){return m==='credit'?'אשראי':m==='debit'?'Debit':'עו״ש'}
+function renderExpenses(){const box=$('expenseList');if(!state.expenses.length){box.innerHTML='<div class="empty">עדיין לא הוספת הוצאות לחודש הבא.</div>'}else{box.innerHTML=state.expenses.map(e=>`<div class="expense-row"><div><strong>${escapeHtml(e.name)}</strong><small>${methodName(e.method)}</small></div><div class="expense-side"><strong>${money(e.amount)}</strong><button type="button" data-delete="${e.id}" aria-label="מחיקה">×</button></div></div>`).join('');box.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>{state.expenses=state.expenses.filter(e=>e.id!==b.dataset.delete);save();render()}))}renderSummary()}
+function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function addExpense(){const name=$('expenseName').value.trim();const amount=round($('expenseAmount').value);const method=$('expenseMethod').value;if(!name){alert('רשום שם להוצאה');return}if(amount<=0){alert('רשום סכום גדול מ-0');return}state.expenses.push({id:String(Date.now()),name,amount,method});$('expenseName').value='';$('expenseAmount').value='';save();render()}
+function render(){$('currentBalance').value=state.currentBalance||'';$('salary').value=state.salary||'';$('reserve').value=state.reserve;renderExpenses()}
+['currentBalance','salary','reserve'].forEach(id=>$(id).addEventListener('input',syncInputs));$('saveExpenseBtn').addEventListener('click',addExpense);$('addExpenseBtn').addEventListener('click',()=>$('expenseName').focus());$('expenseAmount').addEventListener('keydown',e=>{if(e.key==='Enter')addExpense()});$('resetBtn').addEventListener('click',()=>{if(confirm('למחוק את כל נתוני התכנון מהמכשיר?')){state=clone(defaultState);save();render()}});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}render();

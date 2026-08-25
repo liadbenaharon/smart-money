@@ -1,5 +1,6 @@
 const STORAGE_KEY='smartMoneyMonthlyV2';
 const THEME_KEY='smartMoneyTheme';
+const APP_VERSION='0.1.0';
 const defaultState={currentBalance:0,salary:0,currentSavings:0,targetBalance:1000,expenses:[]};
 const clone=o=>JSON.parse(JSON.stringify(o));
 const $=id=>document.getElementById(id);
@@ -19,7 +20,8 @@ function addExpense(){const name=$('expenseName').value.trim();const amount=roun
 function setMonthTitle(){const d=new Date();d.setMonth(d.getMonth()+1,1);$('monthTitle').textContent=`תכנון ${new Intl.DateTimeFormat('he-IL',{month:'long',year:'numeric'}).format(d)}`}
 function applyTheme(theme){document.documentElement.dataset.theme=theme;localStorage.setItem(THEME_KEY,theme);$('themeBtn').textContent=theme==='dark'?'☀️':'🌙';$('themeBtn').setAttribute('aria-label',theme==='dark'?'מעבר למצב בהיר':'מעבר למצב כהה');$('themeColorMeta').setAttribute('content',theme==='dark'?'#0b1220':'#111827')}
 function initTheme(){const saved=localStorage.getItem(THEME_KEY);const preferred=saved||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');applyTheme(preferred)}
-function render(){$('currentBalance').value=state.currentBalance||'';$('salary').value=state.salary||'';$('currentSavings').value=state.currentSavings||'';$('targetBalance').value=state.targetBalance;renderExpenses()}
-['currentBalance','salary','currentSavings','targetBalance'].forEach(id=>$(id).addEventListener('input',syncInputs));$('saveExpenseBtn').addEventListener('click',addExpense);$('addExpenseBtn').addEventListener('click',()=>$('expenseName').focus());$('expenseAmount').addEventListener('keydown',e=>{if(e.key==='Enter')addExpense()});$('themeBtn').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));$('resetBtn').addEventListener('click',()=>{if(confirm('למחוק את כל נתוני התכנון מהמכשיר?')){state=clone(defaultState);save();render()}});
+function showVersion(){alert(`Smart Money v${APP_VERSION}\n\nגרסת Alpha ראשונית.\n\nכולל: תכנון חודשי, הוצאות קבועות, חישוב חיסכון, מצב כהה והתקנת PWA.`)}
+function render(){$('currentBalance').value=state.currentBalance||'';$('salary').value=state.salary||'';$('currentSavings').value=state.currentSavings||'';$('targetBalance').value=state.targetBalance;$('versionBtn').textContent=`v${APP_VERSION}`;renderExpenses()}
+['currentBalance','salary','currentSavings','targetBalance'].forEach(id=>$(id).addEventListener('input',syncInputs));$('saveExpenseBtn').addEventListener('click',addExpense);$('addExpenseBtn').addEventListener('click',()=>$('expenseName').focus());$('expenseAmount').addEventListener('keydown',e=>{if(e.key==='Enter')addExpense()});$('themeBtn').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));$('versionBtn').addEventListener('click',showVersion);$('resetBtn').addEventListener('click',()=>{if(confirm('למחוק את כל נתוני התכנון מהמכשיר?')){state=clone(defaultState);save();render()}});
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 initTheme();setMonthTitle();render();

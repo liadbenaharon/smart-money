@@ -1,0 +1,19 @@
+{
+  "id": "/smart-money/smart-money-v2/",
+  "name": "Smart Money",
+  "short_name": "Smart Money",
+  "description": "אפליקציה אישית לתכנון חודשי, הוצאות וחיסכון",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "/smart-money/smart-money-v2/",
+  "scope": "/smart-money/smart-money-v2/",
+  "display": "standalone",
+  "background_color": "#090f1b",
+  "theme_color": "#111827",
+  "prefer_related_applications": false,
+  "icons": [
+    {"src":"/smart-money/icon-192-v2.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/smart-money/icon-512-v2.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"/smart-money/icon-512-v2.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ]
+}

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <title>Smart Money</title>
+  <link rel="manifest" href="./manifest.json">
+  <style>
+    html,body{margin:0;width:100%;height:100%;background:#090f1b;overflow:hidden}
+    iframe{border:0;width:100%;height:100%;display:block;background:#090f1b}
+  </style>
+</head>
+<body>
+  <iframe src="/smart-money/" title="Smart Money" allow="clipboard-read; clipboard-write"></iframe>
+  <script>
+    if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(console.error)}
+  </script>
+</body>
+</html>

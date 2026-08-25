@@ -12,8 +12,8 @@
   "theme_color": "#111827",
   "prefer_related_applications": false,
   "icons": [
-    {"src":"/smart-money/icon-192-v2.png","sizes":"192x192","type":"image/png","purpose":"any"},
-    {"src":"/smart-money/icon-512-v2.png","sizes":"512x512","type":"image/png","purpose":"any"},
-    {"src":"/smart-money/icon-512-v2.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+    {"src":"/smart-money/smart-money-icon-192-new.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/smart-money/smart-money-icon-512-new.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"/smart-money/smart-money-icon-512-new.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
   ]
 }

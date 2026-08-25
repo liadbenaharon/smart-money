@@ -1,5 +1,6 @@
 (()=>{
 const KEY='smartMoneyMonthlyV2';
+const DISPLAY_VERSION='0.3.1';
 const money=v=>new Intl.NumberFormat('he-IL',{style:'currency',currency:'ILS',maximumFractionDigits:2}).format(Number(v)||0);
 const round=v=>Math.round((Number(v)||0)*100)/100;
 const read=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
@@ -10,7 +11,8 @@ function health(){const s=read(),t=totals(s),el=document.getElementById('monthly
 function decorateExpenses(){const s=read();const rows=[...document.querySelectorAll('.expense-row')];rows.forEach((row,i)=>{const e=(s.expenses||[])[i];if(!e||row.querySelector('[data-complete]'))return;row.classList.toggle('expense-completed',!!e.completed);const side=row.querySelector('.expense-side');if(!side)return;const b=document.createElement('button');b.type='button';b.dataset.complete=e.id;b.className='complete-btn';b.title=e.completed?'סמן כטרם ירד':'סמן כבוצע';b.textContent=e.completed?'↩':'✓';side.insertBefore(b,side.firstChild);b.addEventListener('click',()=>{const fresh=read(),x=(fresh.expenses||[]).find(z=>z.id===e.id);if(!x)return;x.completed=!x.completed;write(fresh);location.reload()})})}
 function comparison(){const s=read(),box=document.getElementById('monthlyComparison');if(!box)return;const h=s.history||[];if(!h.length){box.innerHTML='<div class="empty">אחרי שתסגור חודש ראשון, כאן תופיע השוואה אוטומטית לחודש הקודם.</div>';return}const prev=h[0],cur=totals(s);const expDiff=round(cur.expenses-(Number(prev.expenseTotal)||0));const saveDiff=round(cur.saving-(Number(prev.actualSaving)||0));const bankDiff=round(cur.finalBank-(Number(prev.finalBank)||0));const line=(label,diff,betterPositive=true)=>{const good=betterPositive?diff>=0:diff<=0;const word=diff===0?'ללא שינוי':`${diff>0?'יותר':'פחות'} ${money(Math.abs(diff))}`;return `<div class="compare-row"><span>${label}</span><strong class="${diff===0?'':good?'compare-good':'compare-bad'}">${word}</strong></div>`};box.innerHTML=line('הוצאות',expDiff,false)+line('חיסכון',saveDiff,true)+line('יתרה צפויה בסוף',bankDiff,true)}
 function updateUpcoming(){const s=read();document.querySelectorAll('.upcoming-row').forEach(row=>{const name=row.querySelector('strong')?.textContent;const e=(s.expenses||[]).find(x=>x.name===name);if(e?.completed){row.classList.add('expense-completed');const small=row.querySelector('small');if(small)small.textContent='בוצע ✓ · '+small.textContent}})}
-function run(){ensure();health();decorateExpenses();comparison();updateUpcoming()}
-document.addEventListener('DOMContentLoaded',()=>setTimeout(run,80));
+function version(){const b=document.getElementById('versionBtn');if(b)b.textContent=`v${DISPLAY_VERSION}`}
+function run(){ensure();health();decorateExpenses();comparison();updateUpcoming();version()}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(run,80));window.addEventListener('load',()=>setTimeout(version,150));
 ['input','change'].forEach(ev=>document.addEventListener(ev,e=>{if(['currentBalance','salary','targetBalance','actualSaving'].includes(e.target?.id))setTimeout(health,30)}));
 })();

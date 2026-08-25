@@ -1,6 +1,6 @@
 {
-  "version": "0.3.1",
+  "version": "0.4.0",
   "channel": "alpha",
   "released": "2026-08-25",
-  "name": "Simpler monthly summary"
+  "name": "Simple Monthly View"
 }

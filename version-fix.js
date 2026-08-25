@@ -1,0 +1,1 @@
+(()=>{const VERSION='0.3.1';function apply(){const b=document.getElementById('versionBtn');if(b)b.textContent=`v${VERSION}`;}document.addEventListener('DOMContentLoaded',apply);window.addEventListener('load',apply);setTimeout(apply,150);})();

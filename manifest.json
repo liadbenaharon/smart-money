@@ -1,11 +1,11 @@
 {
-  "id": "/smart-money/?app=v2",
+  "id": "/smart-money/",
   "name": "Smart Money",
   "short_name": "Smart Money",
   "description": "אפליקציה אישית לתכנון חודשי, הוצאות וחיסכון",
   "lang": "he",
   "dir": "rtl",
-  "start_url": "/smart-money/?app=v2",
+  "start_url": "/smart-money/",
   "scope": "/smart-money/",
   "display": "standalone",
   "background_color": "#090f1b",

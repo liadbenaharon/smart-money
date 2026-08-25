@@ -1,4 +1,4 @@
-const CACHE='smart-money-v18';
+const CACHE='smart-money-v19';
 const APP_SHELL=['/smart-money/','/smart-money/index.html','/smart-money/style.css','/smart-money/app.js','/smart-money/recurring-fix.js','/smart-money/v030-features.js','/smart-money/install-diagnostic.js','/smart-money/manifest.json','/smart-money/version.json','/smart-money/CHANGELOG.md','/smart-money/icon-192-v2.png','/smart-money/icon-512-v2.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)));self.skipWaiting();});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});

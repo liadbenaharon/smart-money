@@ -1,0 +1,12 @@
+(()=>{
+const SHIFT_KEY='ilShiftTrackerData_v1';
+const MONEY_KEY='smartMoneyMonthlyV2';
+const NI_THRESHOLD=7703,NI_CEILING=51910,NI_RATE_LOW=0.0427,NI_RATE_HIGH=0.1217;
+const round=v=>Math.round((Number(v)||0)*100)/100;
+const money=v=>new Intl.NumberFormat('he-IL',{style:'currency',currency:'ILS',maximumFractionDigits:2}).format(Number(v)||0);
+function monthKey(ms){const d=new Date(ms);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
+function deduction(grossWork){const low=Math.min(grossWork,NI_THRESHOLD),high=Math.max(0,Math.min(grossWork,NI_CEILING)-NI_THRESHOLD);return low*NI_RATE_LOW+high*NI_RATE_HIGH}
+function getShiftSalary(){try{const raw=localStorage.getItem(SHIFT_KEY);if(!raw)return null;const s=JSON.parse(raw);const shifts=Array.isArray(s.shifts)?s.shifts:[];const current=monthKey(Date.now());const month=shifts.filter(x=>monthKey(Number(x.start))===current);const totalWork=month.reduce((a,x)=>a+(Number(x.pay)||0),0);const travel=month.reduce((a,x)=>a+(Number(x.travel)||0),0);const expenses=month.reduce((a,x)=>a+(Number(x.expenses)||0),0);const net=round(totalWork-deduction(totalWork)+travel-expenses);return{net,count:month.length,current}}catch(e){console.warn('Shift Clock sync failed',e);return null}}
+function sync(){const input=document.getElementById('salary'),status=document.getElementById('salarySyncStatus');if(!input)return;const data=getShiftSalary();if(!data){input.readOnly=false;if(status)status.textContent='לא נמצאו נתוני שעון נוכחות במכשיר הזה — אפשר להזין משכורת ידנית.';return}const val=String(data.net);if(input.value!==val){input.value=val;input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}))}input.readOnly=true;input.dataset.synced='shift-clock';if(status)status.textContent=`מסונכרן אוטומטית משעון הנוכחות · ${data.count} משמרות · ${money(data.net)} נטו`}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(sync,180));window.addEventListener('load',()=>setTimeout(sync,260));window.addEventListener('focus',sync);window.addEventListener('pageshow',sync);window.addEventListener('storage',e=>{if(e.key===SHIFT_KEY)sync()});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync()});
+})();

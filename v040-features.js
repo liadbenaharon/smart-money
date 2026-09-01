@@ -1,5 +1,5 @@
 (()=>{
-const KEY='smartMoneyMonthlyV2',VERSION='0.4.2';
+const KEY='smartMoneyMonthlyV2',VERSION='0.4.3';
 const money=v=>new Intl.NumberFormat('he-IL',{style:'currency',currency:'ILS',maximumFractionDigits:2}).format(Number(v)||0);
 const round=v=>Math.round((Number(v)||0)*100)/100;
 const read=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return{}}};

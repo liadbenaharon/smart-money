@@ -1,6 +1,6 @@
 {
-  "version": "0.4.2",
+  "version": "0.4.3",
   "channel": "alpha",
-  "released": "2026-08-30",
-  "name": "Actual Salary Override"
+  "released": "2026-09-01",
+  "name": "Salary Month Selector"
 }

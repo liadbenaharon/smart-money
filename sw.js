@@ -1,4 +1,4 @@
-const CACHE='smart-money-v043-salary-month-selector';
+const CACHE='smart-money-v044-salary-month-mapping';
 const APP_SHELL=['/smart-money/','/smart-money/index.html','/smart-money/style.css','/smart-money/v040.css','/smart-money/app.js','/smart-money/recurring-fix.js','/smart-money/v040-features.js','/smart-money/salary-sync.js','/smart-money/manifest.json','/smart-money/version.json','/smart-money/smart-money-icon-192-new.png','/smart-money/smart-money-icon-512-new.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)));self.skipWaiting();});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});

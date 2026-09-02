@@ -1,6 +1,6 @@
 {
-  "version": "0.4.5",
+  "version": "0.4.6",
   "channel": "alpha",
   "released": "2026-09-02",
-  "name": "Balance and Expense Bugfixes"
+  "name": "Delete Confirmation and Undo"
 }

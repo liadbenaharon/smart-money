@@ -12,7 +12,6 @@
   "theme_color": "#111827",
   "prefer_related_applications": false,
   "icons": [
-    {"src":"/smart-money/smart-money-icon-192-new.png","sizes":"192x192","type":"image/png","purpose":"any"},
-    {"src":"/smart-money/smart-money-icon-512-new.png","sizes":"512x512","type":"image/png","purpose":"any"}
+    {"src":"/smart-money/smart-money-icon-192-samsung.png?v=2","sizes":"192x192","type":"image/png","purpose":"any"}
   ]
 }

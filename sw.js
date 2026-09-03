@@ -1,5 +1,5 @@
-const CACHE='smart-money-v0464-pwa-install-resilient';
-const APP_SHELL=['/smart-money/','/smart-money/index.html','/smart-money/style.css','/smart-money/v040.css','/smart-money/app.js?v=046','/smart-money/undo-timeout.js?v=0461','/smart-money/recurring-fix.js?v=046','/smart-money/v040-features.js?v=046','/smart-money/salary-sync.js?v=046','/smart-money/manifest.json?v=icon4','/smart-money/version.json','/smart-money/smart-money-icon-192-samsung.png?v=4','/smart-money/smart-money-icon-512-samsung.png?v=4'];
+const CACHE='smart-money-v0465-pwa-diagnostics';
+const APP_SHELL=['/smart-money/','/smart-money/index.html','/smart-money/style.css','/smart-money/v040.css','/smart-money/app.js?v=046','/smart-money/undo-timeout.js?v=0461','/smart-money/recurring-fix.js?v=046','/smart-money/v040-features.js?v=046','/smart-money/salary-sync.js?v=046','/smart-money/pwa-install-debug.js?v=1','/smart-money/manifest.json?v=icon5','/smart-money/version.json','/smart-money/smart-money-icon-192-samsung.png?v=5','/smart-money/smart-money-icon-512-samsung.png?v=5'];
 self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE);
